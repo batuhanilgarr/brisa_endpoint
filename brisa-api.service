@@ -1,0 +1,15 @@
+[Unit]
+Description=Brisa Path Search API Server
+After=network.target
+
+[Service]
+Type=simple
+User=bitiz
+WorkingDirectory=/home/bitiz/Desktop/brisa_endpoint
+Environment="PATH=/home/bitiz/Desktop/brisa_endpoint/venv/bin:/usr/bin:/bin"
+ExecStart=/home/bitiz/Desktop/brisa_endpoint/venv/bin/python /home/bitiz/Desktop/brisa_endpoint/api_server.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
