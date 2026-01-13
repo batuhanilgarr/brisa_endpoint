@@ -133,6 +133,73 @@
             </div>
         </section>
 
+        <!-- Path Search Section -->
+        <section id="path-search" class="section">
+            <h2>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Path Arama (2.3M+ Kayıt)
+            </h2>
+            
+            <!-- Stats - En Üstte -->
+            <div id="searchStats" class="search-stats" style="margin-bottom: 2rem;">
+                <div class="stat-item">
+                    <span class="stat-label">Toplam Kayıt</span>
+                    <span id="totalRecords" class="stat-value">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">API Durumu</span>
+                    <span id="apiStatus" class="stat-value api-offline">Bağlantı Yok</span>
+                </div>
+            </div>
+            
+            <p class="section-desc">
+                TyreCategoryLink veritabanında arama yapın. Marka, model, yıl ve diğer filtrelere göre URL path'lerini bulun.
+            </p>
+            
+            <!-- Search Interface -->
+            <div class="search-container">
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="searchInput" placeholder="Path veya başlık ara... (örn: alfa-romeo, binek, yaz-lastigi)" />
+                        <button id="searchBtn" class="search-btn">Ara</button>
+                    </div>
+                    
+                    <div class="search-filters">
+                        <select id="filterGroupType">
+                            <option value="">Tüm Grup Tipleri</option>
+                            <option value="Consumer">Consumer (Binek)</option>
+                            <option value="Commercial">Commercial (Ağır Vasıta)</option>
+                            <option value="LightCommercial">LightCommercial (Hafif Ticari)</option>
+                        </select>
+                        
+                        <select id="filterListingType">
+                            <option value="">Tüm Liste Tipleri</option>
+                            <option value="VehicleModel">VehicleModel</option>
+                            <option value="TyreCatalogue">TyreCatalogue</option>
+                            <option value="TyreSize">TyreSize</option>
+                        </select>
+                        
+                        <input type="text" id="filterBrand" placeholder="Brand ID" style="width: 100px;" />
+                        <input type="text" id="filterModel" placeholder="Model ID" style="width: 100px;" />
+                        <input type="text" id="filterYear" placeholder="Yıl" style="width: 80px;" />
+                    </div>
+                </div>
+                
+                <!-- Results -->
+                <div id="searchResults" class="search-results">
+                    <p class="no-results">Arama yapmak için yukarıdaki kutuyu kullanın.</p>
+                </div>
+                
+                <!-- Pagination -->
+                <div id="pagination" class="pagination" style="display: none;">
+                    <button id="prevPage" class="page-btn" disabled>← Önceki</button>
+                    <span id="pageInfo" class="page-info">Sayfa 1</span>
+                    <button id="nextPage" class="page-btn">Sonraki →</button>
+                </div>
+            </div>
+        </section>
+
         <!-- Configuration Section -->
         <section id="config" class="section">
             <h2>
@@ -1240,73 +1307,6 @@ HybrisGlobal.PoolVehicleModels = DBOperations.GetPoolVehicleModels();</code></pr
                     <code>VehicleListingTypeSeason</code>
                     <code>VehicleListingTypePosition</code>
                     <code>VehicleListingTypeTyreSelector</code>
-                </div>
-            </div>
-        </section>
-
-        <!-- Path Search Section -->
-        <section id="path-search" class="section">
-            <h2>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                Path Arama (2.3M+ Kayıt)
-            </h2>
-            
-            <!-- Stats - En Üstte -->
-            <div id="searchStats" class="search-stats" style="margin-bottom: 2rem;">
-                <div class="stat-item">
-                    <span class="stat-label">Toplam Kayıt</span>
-                    <span id="totalRecords" class="stat-value">-</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">API Durumu</span>
-                    <span id="apiStatus" class="stat-value api-offline">Bağlantı Yok</span>
-                </div>
-            </div>
-            
-            <p class="section-desc">
-                TyreCategoryLink veritabanında arama yapın. Marka, model, yıl ve diğer filtrelere göre URL path'lerini bulun.
-            </p>
-            
-            <!-- Search Interface -->
-            <div class="search-container">
-                <div class="search-box">
-                    <div class="search-input-wrapper">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        <input type="text" id="searchInput" placeholder="Path veya başlık ara... (örn: alfa-romeo, binek, yaz-lastigi)" />
-                        <button id="searchBtn" class="search-btn">Ara</button>
-                    </div>
-                    
-                    <div class="search-filters">
-                        <select id="filterGroupType">
-                            <option value="">Tüm Grup Tipleri</option>
-                            <option value="Consumer">Consumer (Binek)</option>
-                            <option value="Commercial">Commercial (Ağır Vasıta)</option>
-                            <option value="LightCommercial">LightCommercial (Hafif Ticari)</option>
-                        </select>
-                        
-                        <select id="filterListingType">
-                            <option value="">Tüm Liste Tipleri</option>
-                            <option value="VehicleModel">VehicleModel</option>
-                            <option value="TyreCatalogue">TyreCatalogue</option>
-                            <option value="TyreSize">TyreSize</option>
-                        </select>
-                        
-                        <input type="text" id="filterBrand" placeholder="Brand ID" style="width: 100px;" />
-                        <input type="text" id="filterModel" placeholder="Model ID" style="width: 100px;" />
-                        <input type="text" id="filterYear" placeholder="Yıl" style="width: 80px;" />
-                    </div>
-                </div>
-                
-                <!-- Results -->
-                <div id="searchResults" class="search-results">
-                    <p class="no-results">Arama yapmak için yukarıdaki kutuyu kullanın.</p>
-                </div>
-                
-                <!-- Pagination -->
-                <div id="pagination" class="pagination" style="display: none;">
-                    <button id="prevPage" class="page-btn" disabled>← Önceki</button>
-                    <span id="pageInfo" class="page-info">Sayfa 1</span>
-                    <button id="nextPage" class="page-btn">Sonraki →</button>
                 </div>
             </div>
         </section>
