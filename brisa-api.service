@@ -6,10 +6,12 @@ After=network.target
 Type=simple
 User=bitiz
 WorkingDirectory=/home/bitiz/Desktop/brisa_endpoint
-Environment="PATH=/home/bitiz/Desktop/brisa_endpoint/venv/bin:/usr/bin:/bin"
-ExecStart=/home/bitiz/Desktop/brisa_endpoint/venv/bin/python /home/bitiz/Desktop/brisa_endpoint/api_server.py
+Environment="PATH=/home/bitiz/Desktop/brisa_endpoint/venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/bin/bash /home/bitiz/Desktop/brisa_endpoint/start-api.sh
 Restart=always
 RestartSec=10
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
