@@ -7,6 +7,7 @@ Type=simple
 User=bitiz
 WorkingDirectory=/home/bitiz/Desktop/brisa_endpoint
 Environment="PATH=/home/bitiz/Desktop/brisa_endpoint/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="FLASK_DEBUG=False"
 ExecStart=/bin/bash /home/bitiz/Desktop/brisa_endpoint/start-api.sh
 Restart=always
 RestartSec=10

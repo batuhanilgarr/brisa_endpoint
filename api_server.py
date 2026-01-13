@@ -178,6 +178,10 @@ def health():
     return jsonify({'status': 'error', 'database': 'not found'}), 500
 
 if __name__ == '__main__':
+    import os
+    # Production'da debug kapalı
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    
     print("🚀 Starting Tyre Path API Server...")
     print("📍 API available at http://localhost:5001")
     print("\nEndpoints:")
@@ -185,4 +189,4 @@ if __name__ == '__main__':
     print("  GET /api/stats")
     print("  GET /api/brands")
     print("  GET /api/health")
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=debug_mode)
