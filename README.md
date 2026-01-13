@@ -79,3 +79,32 @@ sudo systemctl status brisa-api     # Durum
 - Virtual environment path'i doğru olmalı: `/home/bitiz/Desktop/brisa_endpoint/venv/bin/python`
 - API sunucusu port 5001'de çalışır
 - Web sitesi port 8090'da çalışır (mevcut `brisa-http.service` ile)
+
+## Linux Sunucu Kurulumu (Debian/Ubuntu)
+
+### Ön Gereksinimler
+
+```bash
+# Python3-venv paketini yükle
+sudo apt update
+sudo apt install -y python3-venv python3-pip
+
+# Veya otomatik kurulum scripti ile
+chmod +x install-dependencies.sh
+./install-dependencies.sh
+```
+
+### Virtual Environment Oluşturma
+
+```bash
+# Virtual environment oluştur
+python3 -m venv venv
+
+# Aktif et
+source venv/bin/activate
+
+# Bağımlılıkları yükle
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
