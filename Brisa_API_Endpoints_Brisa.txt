@@ -1,0 +1,199 @@
+BRISA API ENDPOINTS KULLANIM ANALİZİ - BRISA VERİLERİ
+==================================================
+Oluşturulma Tarihi: 13.01.2026
+Proje: HybrisSync
+
+GENEL BAKIŞ
+-----------
+Bu doküman, HybrisSync uygulamasında kullanılan Brisa API endpoint'lerini analiz eder.
+Uygulama, Brisa'nın backoffice sisteminden yerel veritabanına veri senkronizasyonu yapar.
+
+=== AKTİF BRISA VERİ ENDPOINT'LERİ ===
+
+MARKA BAĞIMSIZ ENDPOINT'LER:
+----------------------------
+
+1. brisabrandcodedescriptions
+   https://backoffice.brisa-online.com/brisarestws/rest/brisabrandcodedescriptions
+   - Amaç: Marka kodu açıklamaları ve çeviriler
+   - Veritabanı Tablosu: BrandCodeDescription
+   - Kullanım: SaveBrandCodeDescriptions()
+   - Alanlar: code, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+   - Kod Örneği:
+     * Endpoint Tanımı: HybrisGlobal.cs
+       ("brisabrandcodedescriptions","BrisaBrandCodeDescription", false, false )
+     
+     * Veri Çekimi: Program.cs (SaveData fonksiyonu)
+       case "brisabrandcodedescriptions":
+           var data1 = JsonConvert.DeserializeObject<DBEntities.BrisaBrandCodeDescriptions>(jsonData);
+           if (data1?.brisabrandcodedescription == null || data1?.brisabrandcodedescription.Length < 1)
+           {
+               result.reachedLastPage = true;
+               break;
+           }
+           LogHelper.Log("Got " + data1.brisabrandcodedescription?.Length + " records.", logColor: ConsoleColor.Cyan, logToFile: true);
+           DBOperations.SaveBrandCodeDescriptions(data1.brisabrandcodedescription.ToList(), processingLang);
+     
+     * Veri Kaydetme: DBOperations.cs
+       public static void SaveBrandCodeDescriptions(List<Brisabrandcodedescription> data, string lang = "tr")
+       {
+           string sql = "INSERT INTO [dbo].[BrandCodeDescription] ([code],[description],[lang],[catalogVersion]) VALUES ";
+           // SQL ile veritabanına kayıt işlemi...
+       }
+
+2. brisapcmparentgroups
+   https://backoffice.brisa-online.com/brisarestws/rest/brisapcmparentgroups
+   - Amaç: PCM (Ürün Kategori Yönetimi) ana grupları
+   - Veritabanı Tablosu: PcmParentGroup
+   - Kullanım: SavePcmParentGroups()
+   - Alanlar: code, modifiedtime, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+
+3. brisapcmservices
+   https://backoffice.brisa-online.com/brisarestws/rest/brisapcmservices
+   - Amaç: PCM servisleri
+   - Veritabanı Tablosu: PcmService
+   - Kullanım: SavePcmServices()
+   - Alanlar: code, modifiedtime, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+
+4. brisapositions
+   https://backoffice.brisa-online.com/brisarestws/rest/brisapositions
+   - Amaç: Pozisyon tanımlamaları
+   - Veritabanı Tablosu: Position
+   - Kullanım: SavePositions()
+   - Alanlar: code, modifiedtime, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+
+5. brisaseasons
+   https://backoffice.brisa-online.com/brisarestws/rest/brisaseasons
+   - Amaç: Mevsim tanımlamaları (Yaz, Kış, Dört Mevsim lastikleri)
+   - Veritabanı Tablosu: Season
+   - Kullanım: SaveSeasons()
+   - Alanlar: code, modifiedtime, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+
+6. brisasegments
+   https://backoffice.brisa-online.com/brisarestws/rest/brisasegments
+   - Amaç: Araç segmentleri
+   - Veritabanı Tablosu: Segment
+   - Kullanım: SaveSegments()
+   - Alanlar: code, modifiedtime, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+
+7. tsegments
+   https://backoffice.brisa-online.com/brisarestws/rest/tsegments
+   - Amaç: T-Segmentler (ek segment sınıflandırması)
+   - Veritabanı Tablosu: TSegment
+   - Kullanım: SaveTSegments()
+   - Marka Gereksinimi: Hayır
+
+8. brisaspecialusages
+   https://backoffice.brisa-online.com/brisarestws/rest/brisaspecialusages
+   - Amaç: Özel kullanım sınıflandırmaları
+   - Veritabanı Tablosu: SpecialUsage
+   - Kullanım: SaveSpecialUsages()
+   - Alanlar: code, modifiedtime, description, lang, catalogVersion
+   - Marka Gereksinimi: Hayır
+
+9. brisatirethreadpatternproducts
+   https://backoffice.brisa-online.com/brisarestws/rest/brisatirethreadpatternproducts
+   - Amaç: Lastik desen desen ürünleri
+   - Veritabanı Tablosu: TireThreadPatternProduct
+   - Kullanım: SaveTireThreadPatternProducts()
+   - Özel: subTypes = false kullanır (diğerlerinden farklı)
+   - Marka Gereksinimi: Hayır
+
+10. mediacontainers
+    https://backoffice.brisa-online.com/brisarestws/rest/mediacontainers
+    - Amaç: Medya dosyaları ve konteynerları
+    - Veritabanı Tablosu: MediaContainer
+    - Kullanım: SaveMediaContainers()
+    - Alanlar: qualifier, catalogVersion, code, downloadURL, modifiedtime, mime, realfilename, size, type
+    - Marka Gereksinimi: Hayır
+
+11. brisasizevariants
+    https://backoffice.brisa-online.com/brisarestws/rest/brisasizevariants
+    - Amaç: Boyut varyantları (lastik ebatları) - MARKA ÖZEL
+    - Veritabanı Tablosu: SizeVariant
+    - Kullanım: SaveSizeVariants()
+    - Alanlar: code, name, width, height, diameter, loadIndex, speedRating, vb.
+    - Marka Gereksinimi: Evet
+    - Not: Her marka için ayrı ayrı marka özel sorgularla işlenir
+    - Kod Örneği:
+      * Endpoint Tanımı: HybrisGlobal.cs
+        ("brisasizevariants","BrisaSizeVariant", true, false)
+      
+      * Marka Özel İşleme: Program.cs (GetBrisaData fonksiyonu)
+        foreach (var brand in HybrisGlobal.AppConfig.Brands)
+        {
+            if (brand.SyncOnlyDB)
+            {
+                LogHelper.Log("Skipping data import for " + brand.BrandName + ".", logColor: ConsoleColor.DarkCyan, logToFile: logAll);
+                continue;
+            }
+            // Her marka için ayrı sorgu oluşturulur
+            string query = getStaged ? "" : (CanCatalogQuery(endpoint) ? 
+                ServiceEntities.EndpointParameters.CreateCatalogueQuery(endpointObject.endpointTable, brand.SyncBrandName) : "");
+        }
+
+
+
+=== KULLANILMAYAN BRISA ENDPOINT'LER ===
+
+Postman koleksiyonunuzdaki aşağıdaki Brisa endpoint'leri HybrisSync uygulamasında KULLANILMIYOR:
+
+1. brisasizecodedescriptions
+   https://backoffice.brisa-online.com/brisarestws/rest/brisasizecodedescriptions
+   - Durum: IMPLEMENTE EDİLMEDİ
+   - Kullanım Amacı: Boyut kodu açıklamaları
+   - Eksik: SaveSizeCodeDescriptions() fonksiyonu yok
+
+2. POST search-document-product
+   https://backoffice.brisa-online.com/brisawebservices/v2/brisa/products/search-document-product
+   - Metod: POST
+   - Amaç: Ürün dokümanlarını arama
+   - Durum: IMPLEMENTE EDİLMEDİ
+   - Kullanım: productCodes ve documentType parametreleri ile doküman alma için kullanılabilir
+
+=== BRISA VERİ İŞLEME AKIŞI ===
+
+1. İşlem Tipleri:
+   - BRISA_DATA: Tüm Brisa endpoint'lerini alır + senkronizasyon yapar
+   - SINGLE_EP: Belirli Brisa endpoint'ini alır + senkronizasyon yapar
+
+2. Veri İşleme:
+   - Marka Bağımsız: Tüm diller için bir kez işlenir
+   - Markaya Bağlı: Her marka için ayrı ayrı işlenir
+
+3. Hata Yönetimi:
+   - HTTP 4xx/5xx hataları e-posta bildirimleri tetikler
+   - Veri işlenmeden önce yedeklenir
+   - Geçersiz JSON işleme sırasında temizlenir
+
+=== YAPILANDIRMA ===
+
+Servis Yapılandırması:
+- Base URL: https://backoffice.brisa-online.com
+- Path: /brisarestws/rest/
+- Kimlik Doğrulama: Basic Auth (ogoomedia:OgooMedia2020!)
+- Sayfalama: Sayfa başına 1000 kayıt
+- Diller: Yapılandırılabilir (varsayılan: tr)
+
+=== ÖZET ===
+
+Analiz Edilen Brisa Endpoint'leri: 13
+Aktif Brisa Endpoint'leri: 11 (10 marka bağımsız + 1 markaya bağlı)
+Kullanılmayan Brisa Endpoint'leri: 2
+
+Önemli Bulgular:
+- Çoğu Brisa endpoint'i veri senkronizasyonu için aktif kullanılıyor
+- Boyut varyantları tek olan markaya bağlı Brisa endpoint'i
+- Doküman arama için POST endpoint'i implemente edilmedi
+- Boyut kodu açıklamaları endpoint'i var ama kullanılmıyor
+
+=== ÖNERİLER ===
+
+1. Boyut kodu çevirilerine ihtiyaç varsa brisasizecodedescriptions implementasyonu düşünün
+2. Doküman alma için search-document-product POST endpoint'i implementasyonu değerlendirin

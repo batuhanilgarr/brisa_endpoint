@@ -1,0 +1,161 @@
+BRISA API ENDPOINTS KULLANIM ANALİZİ - JATO VERİLERİ
+=================================================
+Oluşturulma Tarihi: 13.01.2026
+Proje: HybrisSync
+
+GENEL BAKIŞ
+-----------
+Bu doküman, HybrisSync uygulamasında kullanılan JATO veri kaynaklı Brisa API endpoint'lerini analiz eder.
+Uygulama, JATO veritabanından araç verilerini alarak Brisa sistemine senkronizasyon yapar.
+
+=== AKTİF JATO VERİ ENDPOINT'LERİ ===
+
+Bu endpoint'ler GetJatoData() fonksiyonu tarafından işlenir ve JATO veri kaynakları olarak işaretlenir:
+
+1. brisavehiclebrands
+   https://backoffice.brisa-online.com/brisarestws/rest/brisavehiclebrands
+   - Amaç: JATO veritabanından araç markaları
+   - Veritabanı Tablosu: BrisaVehicleBrand
+   - Kullanım: JATO veri entegrasyonu
+   - Dil: Sadece ilk dil için işlenir (çoklu dil desteği yok)
+   - Veri Kaynağı: JATO (doğrudan Brisa değil)
+   - Kod Örneği:
+     * Endpoint Tanımı: HybrisGlobal.cs
+       ("brisavehiclebrands","BrisaVehicleBrand" )
+     
+     * Veri Çekimi: Program.cs (GetJatoData fonksiyonu)
+       foreach (string endpoint in endpointNames)
+       {
+           // Önce tabloyu sıfırlayalım
+           LogHelper.Log("Clearing " + endpoint + " table.", logColor: ConsoleColor.Magenta, logToFile: true);
+           DBOperations.TruncateHybrisTable(endpoint);
+           
+           // Veriyi servisten al
+           string tempStr = ServiceOperations.Get(endpoint, ep, svcUser, svcPass, "tr");
+           var saveResult = SaveJatoData(endpoint, tempStr, pageNo);
+       }
+     
+     * JATO Veri İşleme: Program.cs (SaveJatoData fonksiyonu)
+       case "brisavehiclebrands":
+           var brands = JsonConvert.DeserializeObject<DBEntities.BrisaVehicleBrands>(jsonData);
+           if (brands?.brisavehiclebrand == null || brands?.brisavehiclebrand.Length < 1)
+           {
+               result.reachedLastPage = true;
+               break;
+           }
+           LogHelper.Log("Got " + brands.brisavehiclebrand?.Length + " records.", logColor: ConsoleColor.Cyan, logToFile: true);
+           DBOperations.SaveJatoVehicleBrands(brands.brisavehiclebrand.ToList());
+
+2. brisavehiclegroups
+   https://backoffice.brisa-online.com/brisarestws/rest/brisavehiclegroups
+   - Amaç: JATO veritabanından araç grupları
+   - Veritabanı Tablosu: BrisaVehicleGroup
+   - Kullanım: JATO veri entegrasyonu
+   - Dil: Sadece ilk dil için işlenir
+   - Veri Kaynağı: JATO
+
+3. brisavehiclemodels
+   https://backoffice.brisa-online.com/brisarestws/rest/brisavehiclemodels
+   - Amaç: JATO veritabanından araç modelleri
+   - Veritabanı Tablosu: BrisaVehicleModel
+   - Kullanım: JATO veri entegrasyonu
+   - Özel: İşlem sonrası HybrisGlobal.PoolVehicleModels güncellenir
+   - Dil: Sadece ilk dil için işlenir
+   - Veri Kaynağı: JATO
+   - Kod Örneği:
+     * Özel İşlem: Program.cs (GetJatoData fonksiyonu)
+       if (endpoint == "brisavehiclemodels")
+       {
+           HybrisGlobal.PoolVehicleModels = DBOperations.GetPoolVehicleModels();
+       }
+     
+     * Veri İşleme: Program.cs (SaveJatoData fonksiyonu)
+       case "brisavehiclemodels":
+           var models = JsonConvert.DeserializeObject<DBEntities.BrisaVehicleModels>(jsonData);
+           if (models?.brisavehiclemodel == null || models?.brisavehiclemodel.Length < 1)
+           {
+               result.reachedLastPage = true;
+               break;
+           }
+           LogHelper.Log("Got " + models.brisavehiclemodel?.Length + " records.", logColor: ConsoleColor.Cyan, logToFile: true);
+           DBOperations.SaveJatoVehicleModels(models.brisavehiclemodel.ToList());
+
+4. brisavehicleproductyears
+   https://backoffice.brisa-online.com/brisarestws/rest/brisavehicleproductyears
+   - Amaç: JATO veritabanından araç ürün yılları
+   - Veritabanı Tablosu: BrisaVehicleProductYear
+   - Kullanım: JATO veri entegrasyonu
+   - Dil: Sadece ilk dil için işlenir
+   - Veri Kaynağı: JATO
+
+5. brisavehicleversions
+   https://backoffice.brisa-online.com/brisarestws/rest/brisavehicleversions
+   - Amaç: JATO veritabanından araç versiyonları
+   - Veritabanı Tablosu: BrisaVehicleVersion
+   - Kullanım: JATO veri entegrasyonu
+   - Dil: Sadece ilk dil için işlenir
+   - Veri Kaynağı: JATO
+
+=== JATO VERİ İNTEGRASYON YAPILANDIRMASI ===
+
+Jato Entegrasyon Verileri:
+- IntegrationJatoBrands: JATO marka entegrasyon verileri
+- IntegrationJatoModels: JATO model entegrasyon verileri  
+- IntegrationJatoVersions: JATO versiyon entegrasyon verileri
+- PoolVehicleModels: Havuz araç modelleri
+
+Kod Örneği: Program.cs (GetJatoData fonksiyonu başlangıcı)
+HybrisGlobal.IntegrationJatoBrands = DBOperations.GetIntegrationJatoBrands();
+HybrisGlobal.IntegrationJatoModels = DBOperations.GetIntegrationJatoModels();
+HybrisGlobal.IntegrationJatoVersions = DBOperations.GetIntegrationJatoVersions();
+HybrisGlobal.PoolVehicleModels = DBOperations.GetPoolVehicleModels();
+
+=== JATO VERİ İŞLEME AKIŞI ===
+
+1. İşlem Tipi:
+   - JATO_DATA: Sadece JATO endpoint'lerini alır (senkronizasyon yapmaz)
+
+2. Veri İşleme Özellikleri:
+   - Sadece "tr" dili için işlenir (çoklu dil desteği yok)
+   - Sayfalama ile veri çekimi (sayfa başına 1000 kayıt)
+   - Her endpoint için önce tablo temizlenir, sonra veri eklenir
+
+3. JATO Özel Durumlar:
+   - brisavehiclemodels işlemden sonra PoolVehicleModels güncellenir
+   - JATO entegrasyon verileri önceden yüklenir
+   - CatalogVersion sorguları desteklenir
+
+=== JATO VERİ FARKLILIKLARI ===
+
+Brisa Verilerinden Farklılıklar:
+- Veri Kaynağı: JATO veritabanı (Brisa backoffice değil)
+- Dil Desteği: Sadece tek dil (tr)
+- İşlem Tipi: Sadece veri çekimi (senkronizasyon yok)
+- Tablo Yapısı: JATO'ya özel veritabanı tabloları
+
+=== YAPILANDIRMA ===
+
+Servis Yapılandırması:
+- Base URL: https://backoffice.brisa-online.com
+- Path: /brisarestws/rest/
+- Kimlik Doğrulama: Basic Auth (ogoomedia:OgooMedia2020!)
+- Sayfalama: Sayfa başına 1000 kayıt
+- Dil: Sadece "tr" (Türkçe)
+
+=== ÖZET ===
+
+Analiz Edilen JATO Endpoint'leri: 5
+Aktif JATO Endpoint'leri: 5
+Kullanılmayan JATO Endpoint'leri: 0
+
+Önemli Bulgular:
+- Tüm JATO endpoint'leri aktif kullanılıyor
+- Araç verileri tamamen JATO kaynaklı
+- Çoklu dil desteği yok
+- brisavehiclemodels özel işlem gerektiriyor
+
+=== ÖNERİLER ===
+
+1. JATO araç verileri için çoklu dil desteği eklenmesi değerlendirilebilir
+2. Tüm JATO araç endpoint'lerinin doğrudan Brisa verisi kullanacak şekilde dönüştürülüp dönüştürülmeyeceğini gözden geçirin
+3. JATO veri senkronizasyonu için ayrı bir senkronizasyon prosedürü düşünün
