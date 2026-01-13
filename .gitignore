@@ -1,0 +1,17 @@
+# Database files (too large for git)
+*.db
+tyre_paths.db
+
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Large data files
+*.csv
+*.json
+UBY.TyreListFriendlyPath.*
+
+# OS files
+.DS_Store
+*.zip
